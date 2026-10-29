@@ -507,6 +507,7 @@
       <div id="team-names-list"></div>
       
       <button id="reset-btn" class="btn btn-danger btn-reset">RESET / BUKA KUNCI RONDE</button>
+      <button id="reset-scores-btn" class="btn btn-danger" style="width: 100%; margin-top: 8px; background: #7c2d12;">RESET SEMUA SKOR JADI 0</button>
     </section>
 
     <button id="admin-toggle-btn" class="link-btn">Masuk sebagai Admin / Juri</button>
@@ -823,6 +824,16 @@
     state.winner = null;
     state.round++;
     updateCloudState();
+  });
+
+  // Fitur Reset Poin / Skor Semua Tim Jadi 0
+  $("reset-scores-btn").addEventListener("click", () => {
+    if (confirm("Yakin ingin mereset seluruh skor tim menjadi 0?")) {
+      state.scores = Array.from({length: MAX_TEAMS}, () => 0);
+      state.winner = null;
+      state.round = 1;
+      updateCloudState();
+    }
   });
 
   $("team-count").addEventListener("change", (e) => {
