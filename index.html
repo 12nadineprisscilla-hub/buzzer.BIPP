@@ -1,836 +1,179 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Buzzer Cerdas Cermat ESSMATH</title>
-  <style>
-    :root {
-      --bg: #090d16;
-      --card: #131c2e;
-      --card-border: #1e293b;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #f97316;
-      --primary-hover: #ea580c;
-      --success: #22c55e;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --disabled: #334155;
-      --font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* Background Animated Elements */
-    .bg-decorations {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-
-    .floating-symbol {
-      position: absolute;
-      color: rgba(249, 115, 22, 0.25);
-      font-weight: 800;
-      font-size: 20px;
-      animation: floatUp 10s linear infinite;
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
-      20% { opacity: 0.6; }
-      80% { opacity: 0.6; }
-      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-    }
-
-    /* Mascot Owl Lucu di Sudut Kiri */
-    .mascot-container {
-      position: fixed;
-      bottom: 10px;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      pointer-events: none;
-    }
-
-    .mascot-left { left: 10px; }
-    .mascot-right { right: 10px; transform: scaleX(-1); }
-
-    .cute-owl {
-      width: 60px;
-      height: 60px;
-      animation: owlBob 3s ease-in-out infinite alternate;
-      filter: drop-shadow(0 4px 10px rgba(249, 115, 22, 0.4));
-    }
-
-    @keyframes owlBob {
-      0% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-8px) rotate(-4deg); }
-      100% { transform: translateY(-4px) rotate(4deg); }
-    }
-
-    .speech-bubble {
-      background: #f97316;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 4px 8px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      animation: bubbleBounce 2s infinite alternate;
-      white-space: nowrap;
-    }
-
-    @keyframes bubbleBounce {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-4px); }
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Container Logo Animasi OSSMAPA */
-    .logo-container {
-      width: 150px;
-      height: 150px;
-      border-radius: 24px;
-      overflow: hidden;
-      background: #000;
-      border: 2px solid #f97316;
-      box-shadow: 0 0 30px rgba(249, 115, 22, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-      position: relative;
-    }
-
-    .logo-container svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    @keyframes pulseGlow {
-      0%, 100% { filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.6)); }
-      50% { filter: drop-shadow(0 0 18px rgba(251, 191, 36, 0.95)); }
-    }
-
-    @keyframes pulseCrystal {
-      0%, 100% { opacity: 0.85; transform: scale(1); transform-origin: center; }
-      50% { opacity: 1; transform: scale(1.15); transform-origin: center; filter: drop-shadow(0 0 10px #ef4444); }
-    }
-
-    @keyframes blinkEyes {
-      0%, 90%, 100% { transform: scaleY(1); transform-origin: center; }
-      95% { transform: scaleY(0.1); transform-origin: center; }
-    }
-
-    .anim-glow { animation: pulseGlow 3s infinite ease-in-out; }
-    .anim-crystal { animation: pulseCrystal 2s infinite ease-in-out; }
-    .anim-eyes { animation: blinkEyes 4s infinite ease-in-out; }
-
-    h1 {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: #fff;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 12px;
-      font-size: 12px;
-      font-weight: 700;
-      border-radius: 9999px;
-      background: var(--primary);
-      color: #fff;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Tema Khusus Admin */
-    .admin-theme {
-      border-color: rgba(249, 115, 22, 0.5);
-      background: #171210;
-      box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    /* Tombol Buzzer 3D Bulat */
-    .buzz-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 14px 0;
-      position: relative;
-    }
-
-    #buzz-btn {
-      width: 210px;
-      height: 210px;
-      border-radius: 50%;
-      border: none;
-      font-size: 34px;
-      font-weight: 900;
-      letter-spacing: 0.05em;
-      color: #fff;
-      background: radial-gradient(circle at 35% 35%, #4ade80, #15803d);
-      box-shadow: 0 15px 35px rgba(21, 128, 61, 0.5), inset 0 6px 10px rgba(255,255,255,0.4), inset 0 -8px 15px rgba(0,0,0,0.5);
-      cursor: pointer;
-      transition: all 0.1s ease;
-      touch-action: manipulation;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      position: relative;
-      z-index: 2;
-    }
-
-    #buzz-btn:active:not(:disabled) {
-      transform: scale(0.94);
-      box-shadow: 0 8px 20px rgba(21, 128, 61, 0.4), inset 0 3px 5px rgba(255,255,255,0.2), inset 0 -4px 8px rgba(0,0,0,0.5);
-    }
-
-    #buzz-btn:disabled {
-      background: radial-gradient(circle at 35% 35%, #64748b, #334155);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 4px 6px rgba(255,255,255,0.1);
-      cursor: not-allowed;
-      opacity: 0.8;
-    }
-
-    #buzz-btn.won {
-      background: radial-gradient(circle at 35% 35%, #fbbf24, #b45309);
-      box-shadow: 0 0 45px rgba(245, 158, 11, 0.8), inset 0 6px 10px rgba(255,255,255,0.4);
-      animation: pulse 1s infinite alternate;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.04); }
-    }
-
-    .status-box {
-      text-align: center;
-      margin-top: 14px;
-      font-size: 17px;
-      font-weight: 700;
-      min-height: 28px;
-    }
-
-    /* Form & Input Admin */
-    .form-group {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
-      align-items: center;
-    }
-
-    input, select {
-      flex: 1;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-      background: #090d16;
-      color: var(--text);
-      font-size: 15px;
-      outline: none;
-    }
-
-    input:focus, select:focus {
-      border-color: var(--primary);
-    }
-
-    .btn {
-      padding: 12px 20px;
-      border-radius: 10px;
-      border: none;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      background: var(--primary);
-      color: #fff;
-      transition: background 0.2s;
-    }
-
-    .btn:hover { background: var(--primary-hover); }
-    .btn-danger { background: var(--danger); }
-    .btn-danger:hover { background: #b91c1c; }
-    .btn-success { background: var(--success); }
-    .btn-success:hover { background: #16a34a; }
-    .btn-reset { width: 100%; font-size: 16px; padding: 14px; margin-top: 10px; }
-
-    .link-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      text-decoration: underline;
-      cursor: pointer;
-      font-size: 14px;
-      margin-top: 10px;
-      width: 100%;
-      text-align: center;
-    }
-
-    .team-setting-row {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 8px;
-      align-items: center;
-    }
-
-    /* Leaderboard & Panel Admin Info */
-    .leaderboard-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 10px;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .leaderboard-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      background: #090d16;
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    .leaderboard-item.winner-glow {
-      border-color: var(--warning);
-      background: rgba(245, 158, 11, 0.1);
-    }
-
-    .score-badge {
-      padding: 2px 8px;
-      border-radius: 6px;
-      background: var(--disabled);
-      font-weight: 700;
-    }
-
-    .score-badge.minus {
-      background: rgba(239, 68, 68, 0.2);
-      border: 1px solid var(--danger);
-      color: var(--danger);
-    }
-
-    .admin-action-box {
-      background: #090d16;
-      border: 1px solid var(--card-border);
-      padding: 12px;
-      border-radius: 10px;
-      margin-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .hide { display: none !important; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Buzzer Realtime Supabase</title>
+    <!-- Memuat Supabase JS Client dari CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        input {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+        input:focus {
+            border-color: #3ecf8e;
+        }
+        #buzzer {
+            width: 180px;
+            height: 180px;
+            font-size: 22px;
+            font-weight: bold;
+            background: #3ecf8e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(62, 207, 142, 0.4);
+            transition: 0.1s;
+        }
+        #buzzer:active {
+            transform: scale(0.95);
+        }
+        #buzzer:disabled {
+            background: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            min-height: 50px;
+        }
+        #resetBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 14px;
+            background: #2f3542;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #resetBtn:hover {
+            background: #57606f;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Background Animated Elements -->
-  <div class="bg-decorations" id="bg-decor"></div>
-
-  <!-- Mascot Owl Lucu di Sudut Kiri -->
-  <div class="mascot-container mascot-left">
-    <svg class="cute-owl" viewBox="0 0 100 100">
-      <circle cx="50" cy="55" r="35" fill="#f97316"/>
-      <circle cx="50" cy="58" r="26" fill="#fbbf24"/>
-      <circle cx="38" cy="48" r="12" fill="#fff"/>
-      <circle cx="62" cy="48" r="12" fill="#fff"/>
-      <circle cx="40" cy="48" r="6" fill="#000"/>
-      <circle cx="60" cy="48" r="6" fill="#000"/>
-      <circle cx="42" cy="45" r="2" fill="#fff"/>
-      <circle cx="62" cy="45" r="2" fill="#fff"/>
-      <polygon points="50,54 44,60 56,60" fill="#ea580c"/>
-      <path d="M15,55 Q25,70 20,80" stroke="#ea580c" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M85,55 Q75,70 80,80" stroke="#ea580c" stroke-width="5" fill="none" stroke-linecap="round"/>
-    </svg>
-    <div class="speech-bubble" id="owl-bubble">Semangat! 🦉</div>
-  </div>
-
-  <header>
-    <div class="logo-container">
-      <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" class="anim-glow">
-        <rect width="500" height="500" fill="#000"/>
-        <g class="anim-crystal">
-          <polygon points="250,25 237,65 250,80 263,65" fill="#ef4444"/>
-          <polygon points="212,40 202,72 214,82 226,72" fill="#dc2626"/>
-          <polygon points="288,40 274,72 286,82 298,72" fill="#dc2626"/>
-        </g>
-        <path d="M250,105 C320,95 410,55 460,15 C420,105 370,175 320,225 C280,265 260,305 250,335 C240,305 220,265 180,225 C130,175 80,105 40,15 C90,55 180,95 250,105 Z" fill="#fbbf24"/>
-        <path d="M250,115 C310,110 390,75 435,37 C400,110 355,170 310,215 C275,250 258,290 250,315 C242,290 225,250 190,215 C145,170 100,110 65,37 C110,75 190,110 250,115 Z" fill="#f97316"/>
-        <path d="M250,130 C330,130 410,155 435,225 C410,305 350,355 280,385 C265,393 255,400 250,410 C245,400 235,393 220,385 C150,355 90,305 65,225 C90,155 170,130 250,130 Z" fill="#ea580c"/>
-        <path d="M250,145 C315,145 380,167 405,225 C385,290 335,333 275,360 C262,367 254,373 250,380 C246,373 238,367 225,360 C165,333 115,290 95,225 C120,167 185,145 250,145 Z" fill="#f59e0b"/>
-        <path d="M250,160 C300,160 355,180 375,225 C360,275 320,313 270,337 C260,342 253,347 250,353 C247,347 240,342 230,337 C180,313 140,275 125,225 C145,180 200,160 250,160 Z" fill="#fef08a"/>
-        <path d="M250,205 C270,205 285,225 285,250 C285,280 265,300 250,310 C235,300 215,280 215,250 C215,225 230,205 250,205 Z" fill="#f97316"/>
-        <ellipse cx="250" cy="235" rx="20" ry="25" fill="#ea580c"/>
-        <g class="anim-eyes">
-          <ellipse cx="185" cy="220" rx="32" ry="22" fill="#000"/>
-          <ellipse cx="315" cy="220" rx="32" ry="22" fill="#000"/>
-          <circle cx="190" cy="215" r="7" fill="#fff"/>
-          <circle cx="320" cy="215" r="7" fill="#fff"/>
-        </g>
-      </svg>
-    </div>
-    <h1>BUZZER CERDAS CERMAT</h1>
-    <div id="role-badge" class="badge hide">PANEL ADMIN / JURI</div>
-  </header>
-
-  <div class="container">
-
-    <!-- Panel Login Peserta / Tim -->
-    <section id="participant-login-card" class="card">
-      <div class="card-title">Login Perangkat Tim</div>
-      <div class="form-group">
-        <select id="login-team-select"></select>
-      </div>
-      <div class="form-group">
-        <input id="login-team-pin" type="password" placeholder="Masukkan Kode / PIN Tim">
-      </div>
-      <button id="team-login-btn" class="btn" style="width: 100%;">Masuk sebagai Tim</button>
-      <div id="team-login-msg" style="color: var(--danger); font-size: 14px; margin-top: 8px; text-align: center;"></div>
-    </section>
-
-    <!-- Area Utama Peserta (Buzzer) -->
-    <section class="card hide" id="main-card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <div class="card-title" id="logged-in-team-label" style="margin: 0; color: var(--primary);"></div>
-        <div id="participant-score-badge" class="score-badge">Skor: 0</div>
-      </div>
-
-      <div class="card-title" style="margin-top: 14px; text-align: center;">Tekan Tombol Saat Ingin Menjawab</div>
-      <div class="buzz-wrapper">
-        <button id="buzz-btn">
-          <span>BUZZ</span>
-          <span style="font-size: 12px; font-weight: 500; opacity: 0.9;">CEPAT</span>
-        </button>
-      </div>
-      <div id="status-text" class="status-box"></div>
-      <button id="logout-team-btn" class="link-btn" style="margin-top: 16px;">Keluar / Ganti Tim</button>
-    </section>
-
-    <!-- Panel Login Admin -->
-    <section id="login-card" class="card hide">
-      <div class="card-title">Akses Khusus Juri / Admin</div>
-      <div class="form-group">
-        <input id="pin-input" type="password" placeholder="Masukkan PIN Admin">
-        <button id="pin-btn" class="btn">Masuk</button>
-      </div>
-      <div id="pin-msg" style="color: var(--danger); font-size: 14px;"></div>
-    </section>
-
-    <!-- Panel Kontrol Admin -->
-    <section id="admin-card" class="card admin-theme hide">
-      <div class="card-title" style="color: var(--primary);">Panel Kontrol Pertandingan (Pusat)</div>
-      
-      <!-- Status Buzzer & Tombol Pemenang -->
-      <div class="admin-action-box">
-        <div style="font-size: 13px; font-weight: 700; color: var(--text-muted);">STATUS BUZZER SAAT INI:</div>
-        <div id="admin-winner-status" style="font-size: 15px; font-weight: 800; color: var(--warning);">Belum ada yang memencet</div>
+    <div class="container">
+        <h2>⚡ Game Buzzer Realtime ⚡</h2>
+        <p>Masukkan nama kamu sebelum memencet!</p>
+        <input type="text" id="playerName" placeholder="Nama Kamu...">
+        <br>
+        <button id="buzzer">PENCET!</button>
         
-        <div id="admin-judging-controls" class="hide" style="display: flex; gap: 8px; margin-top: 6px;">
-          <button id="admin-correct-btn" class="btn btn-success" style="flex: 1; padding: 10px;">BENAR (+10)</button>
-          <button id="admin-wrong-btn" class="btn btn-danger" style="flex: 1; padding: 10px;">SALAH (-3)</button>
-        </div>
-      </div>
+        <div id="status">Menunggu pemain...</div>
+        
+        <button id="resetBtn">Reset Buzzer (Host)</button>
+    </div>
 
-      <!-- Klasemen Skor Realtime -->
-      <div class="card-title" style="font-size: 13px; margin-top: 16px;">Papan Skor & Klasemen:</div>
-      <div id="admin-leaderboard" class="leaderboard-list"></div>
+    <script>
+        // Konfigurasi Supabase menggunakan akun kamu
+        const SUPABASE_URL = 'https://hdtuhrfwgjzlgstaqsag.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_AKyaT4Wj-uFiiAsfiRYYiA_hq5-P1S2';
 
-      <div class="form-group" style="margin-top: 16px;">
-        <label style="width: 110px; font-size: 14px;">Jumlah Tim:</label>
-        <select id="team-count"></select>
-      </div>
-      
-      <div class="card-title" style="font-size: 13px; margin-top: 12px;">Atur Nama, Kode, & PIN Tim:</div>
-      <div id="team-names-list"></div>
-      
-      <button id="reset-btn" class="btn btn-danger btn-reset">RESET / BUKA KUNCI RONDE</button>
-    </section>
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    <button id="admin-toggle-btn" class="link-btn">Masuk sebagai Admin / Juri</button>
+        const buzzerBtn = document.getElementById('buzzer');
+        const statusDiv = document.getElementById('status');
+        const nameInput = document.getElementById('playerName');
+        const resetBtn = document.getElementById('resetBtn');
 
-  </div>
+        // Fungsi untuk mengambil status awal dari database
+        async function fetchState() {
+            const { data, error } = await supabase
+                .from('buzzer')
+                .select('winner')
+                .eq('id', 1)
+                .single();
+            
+            if (data) {
+                updateUI(data.winner);
+            }
+        }
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        // Update tampilan berdasarkan siapa pemenangnya
+        function updateUI(winner) {
+            if (winner) {
+                statusDiv.innerHTML = `🎉 PEMENANG:<br><span style="color: #3ecf8e; font-size: 24px;">${winner}</span>`;
+                buzzerBtn.disabled = true;
+                nameInput.disabled = true;
+            } else {
+                statusDiv.innerHTML = "Menunggu pemain menekan buzzer...";
+                buzzerBtn.disabled = false;
+                nameInput.disabled = false;
+            }
+        }
 
-  // Konfigurasi Firebase Publik Aman untuk Proyek Cerdas Cermat
-  const firebaseConfig = {
-    databaseURL: "https://essmath-buzzer-default-rtdb.firebaseio.com/"
-  };
+        // 1. Aksi ketika tombol buzzer ditekan
+        buzzerBtn.addEventListener('click', async () => {
+            const name = nameInput.value.trim();
+            if (!name) {
+                alert("Mohon masukkan nama kamu terlebih dahulu!");
+                nameInput.focus();
+                return;
+            }
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+            // Cek dulu apakah sudah ada pemenang di database
+            const { data: current } = await supabase
+                .from('buzzer')
+                .select('winner')
+                .eq('id', 1)
+                .single();
 
-  const MAX_TEAMS = 10;
-  const ADMIN_PIN = "23210";
+            if (current && !current.winner) {
+                // Jika belum ada pemenang, update baris id=1 dengan nama pemain ini
+                await supabase
+                    .from('buzzer')
+                    .update({ winner: name, updated_at: Date.now() })
+                    .eq('id', 1);
+            }
+        });
 
-  // Background floating symbols
-  (function createFloatingBg() {
-    const bgContainer = document.getElementById("bg-decor");
-    const symbols = ["+", "−", "×", "÷", "π", "✨", "★", "🦉"];
-    for (let i = 0; i < 20; i++) {
-      const el = document.createElement("div");
-      el.className = "floating-symbol";
-      el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-      el.style.left = Math.random() * 100 + "vw";
-      el.style.animationDuration = (6 + Math.random() * 8) + "s";
-      el.style.animationDelay = (Math.random() * 5) + "s";
-      el.style.fontSize = (16 + Math.random() * 16) + "px";
-      bgContainer.appendChild(el);
-    }
-  })();
+        // 2. Mendengarkan perubahan data secara real-time via WebSocket Supabase
+        supabase
+            .channel('public:buzzer')
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'buzzer' }, (payload) => {
+                const newWinner = payload.new.winner;
+                updateUI(newWinner);
+            })
+            .subscribe();
 
-  let state = {
-    count: 4,
-    teams: Array.from({length: MAX_TEAMS}, (_, i) => `Tim ${i + 1}`),
-    teamCodes: Array.from({length: MAX_TEAMS}, (_, i) => `TIM${i + 1}`),
-    teamPins: Array.from({length: MAX_TEAMS}, (_, i) => `10${i + 1}`),
-    scores: Array.from({length: MAX_TEAMS}, () => 0),
-    winner: null,
-    round: 1
-  };
+        // 3. Tombol Reset untuk Host
+        resetBtn.addEventListener('click', async () => {
+            await supabase
+                .from('buzzer')
+                .update({ winner: null, updated_at: null })
+                .eq('id', 1);
+            nameInput.value = '';
+        });
 
-  let myTeamIndex = null;
-  let isAdmin = false;
-  let audioCtx = null;
-
-  const $ = (id) => document.getElementById(id);
-
-  try {
-    const savedTeam = localStorage.getItem("my_buzzer_team");
-    if (savedTeam !== null) myTeamIndex = parseInt(savedTeam, 10);
-  } catch(e) {}
-
-  let countOptions = "";
-  for (let i = 2; i <= MAX_TEAMS; i++) {
-    countOptions += `<option value="${i}">${i} Tim</option>`;
-  }
-  $("team-count").innerHTML = countOptions;
-
-  function updateLoginTeamSelect() {
-    let html = "";
-    for (let i = 0; i < state.count; i++) {
-      html += `<option value="${i}">${state.teams[i]} (Kode: ${state.teamCodes[i]} | PIN: ${state.teamPins[i]})</option>`;
-    }
-    $("login-team-select").innerHTML = html;
-  }
-
-  function playSound() {
-    try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === "suspended") audioCtx.resume();
-
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.5);
-    } catch(e) {}
-  }
-
-  document.addEventListener("pointerdown", () => {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
-  }, { once: true });
-
-  function renderAdminPanel() {
-    $("team-count").value = state.count;
-    let html = "";
-    for (let i = 0; i < state.count; i++) {
-      html += `
-        <div class="team-setting-row">
-          <input type="text" data-team-input="${i}" value="${state.teams[i]}" maxlength="18" style="flex: 2;" placeholder="Nama Tim">
-          <input type="text" data-code-input="${i}" value="${state.teamCodes[i] || 'TIM' + (i+1)}" maxlength="10" style="flex: 1.2;" placeholder="Kode">
-          <input type="text" data-pin-input="${i}" value="${state.teamPins[i]}" maxlength="10" style="flex: 1;" placeholder="PIN">
-        </div>
-      `;
-    }
-    $("team-names-list").innerHTML = html;
-
-    // Leaderboard & Admin Winner state
-    let lbHtml = "";
-    for (let i = 0; i < state.count; i++) {
-      const isWinner = state.winner === i;
-      const scoreVal = state.scores[i] || 0;
-      const isMinus = scoreVal < 0;
-      lbHtml += `
-        <div class="leaderboard-item ${isWinner ? 'winner-glow' : ''}">
-          <span><strong>${state.teams[i]}</strong> <span style="font-size:11px; color:var(--text-muted)">(Kode: ${state.teamCodes[i]})</span> ${isWinner ? '🏆 (TERCEPAT)' : ''}</span>
-          <span class="score-badge ${isMinus ? 'minus' : ''}">${scoreVal} Poin</span>
-        </div>
-      `;
-    }
-    $("admin-leaderboard").innerHTML = lbHtml;
-
-    if (state.winner !== null) {
-      $("admin-winner-status").textContent = `Dimenangkan oleh: ${state.teams[state.winner]} (Kode: ${state.teamCodes[state.winner]})`;
-      $("admin-judging-controls").classList.remove("hide");
-    } else {
-      $("admin-winner-status").textContent = "Menunggu tim memencet buzzer...";
-      $("admin-judging-controls").classList.add("hide");
-    }
-  }
-
-  function render() {
-    updateLoginTeamSelect();
-
-    if (myTeamIndex !== null && myTeamIndex < state.count && !isAdmin) {
-      $("participant-login-card").classList.add("hide");
-      $("main-card").classList.remove("hide");
-      $("logged-in-team-label").textContent = `${state.teams[myTeamIndex]} [${state.teamCodes[myTeamIndex]}]`;
-      
-      const myScore = state.scores[myTeamIndex] || 0;
-      const scoreBadge = $("participant-score-badge");
-      scoreBadge.textContent = `Skor: ${myScore}`;
-      if (myScore < 0) {
-        scoreBadge.className = "score-badge minus";
-      } else {
-        scoreBadge.className = "score-badge";
-      }
-    } else if (!isAdmin) {
-      $("participant-login-card").classList.remove("hide");
-      $("main-card").classList.add("hide");
-    }
-
-    const buzzBtn = $("buzz-btn");
-    const statusText = $("status-text");
-    const bubble = $("owl-bubble");
-
-    buzzBtn.className = "";
-
-    if (state.winner !== null) {
-      buzzBtn.disabled = true;
-      buzzBtn.classList.add("won");
-
-      if (myTeamIndex === state.winner) {
-        buzzBtn.innerHTML = `<span>MENJAWAB</span>`;
-        statusText.textContent = `🏆 ${state.teams[state.winner]} TERCEPAT! SILAKAN MENJAWAB.`;
-        statusText.style.color = "var(--warning)";
-        if (bubble) bubble.textContent = "wihh, gacorr! 🎉";
-      } else {
-        buzzBtn.innerHTML = `<span>TERKUNCI</span>`;
-        statusText.textContent = `🔒 Yahh kamu keduluan! Dijawab oleh ${state.teams[state.winner]}.`;
-        statusText.style.color = "var(--danger)";
-        if (bubble) bubble.textContent = "Yahh kamu keduluan! 🥺";
-      }
-    } else {
-      buzzBtn.disabled = false;
-      buzzBtn.innerHTML = `<span>BUZZ!</span><span style="font-size: 11px; font-weight: 500; opacity: 0.9;">CEPAT</span>`;
-      statusText.textContent = "Siap! Tekan tombol buzzer secepat mungkin.";
-      statusText.style.color = "var(--success)";
-      if (bubble) bubble.textContent = "yukk semangatt! 🦉";
-    }
-
-    if (isAdmin) renderAdminPanel();
-  }
-
-  // Sinkronisasi Realtime dengan Firebase Database
-  const stateRef = ref(db, 'buzzer_state');
-  onValue(stateRef, (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-      const prevWinner = state.winner;
-      state = data;
-      if (!state.teamCodes) {
-        state.teamCodes = Array.from({length: MAX_TEAMS}, (_, i) => `TIM${i + 1}`);
-      }
-      if (prevWinner === null && state.winner !== null) {
-        playSound();
-      }
-      render();
-    } else {
-      // Inisialisasi awal jika database kosong
-      set(stateRef, state);
-    }
-  });
-
-  function updateCloudState() {
-    set(stateRef, state);
-  }
-
-  function pressBuzzer() {
-    if (state.winner !== null) return;
-    if (myTeamIndex === null || myTeamIndex >= state.count) return;
-
-    state.winner = myTeamIndex;
-    playSound();
-    updateCloudState();
-  }
-
-  $("team-login-btn").addEventListener("click", () => {
-    const selectedIdx = parseInt($("login-team-select").value, 10);
-    const enteredPin = $("login-team-pin").value.trim();
-
-    if (enteredPin === state.teamPins[selectedIdx]) {
-      myTeamIndex = selectedIdx;
-      try { localStorage.setItem("my_buzzer_team", myTeamIndex); } catch(e){}
-      $("login-team-pin").value = "";
-      $("team-login-msg").textContent = "";
-      render();
-    } else {
-      $("team-login-msg").textContent = "Kode / PIN Tim salah!";
-    }
-  });
-
-  $("logout-team-btn").addEventListener("click", () => {
-    myTeamIndex = null;
-    try { localStorage.removeItem("my_buzzer_team"); } catch(e){}
-    render();
-  });
-
-  $("buzz-btn").addEventListener("pointerdown", (e) => {
-    e.preventDefault();
-    pressBuzzer();
-  });
-
-  window.addEventListener("keydown", (e) => {
-    if ((e.key === " " || e.key === "Enter") && document.activeElement.tagName !== "INPUT") {
-      e.preventDefault();
-      pressBuzzer();
-    }
-  });
-
-  $("admin-toggle-btn").addEventListener("click", () => {
-    $("login-card").classList.toggle("hide");
-  });
-
-  $("pin-btn").addEventListener("click", () => {
-    const pin = $("pin-input").value.trim();
-    if (pin === ADMIN_PIN) {
-      isAdmin = true;
-      $("participant-login-card").classList.add("hide");
-      $("main-card").classList.add("hide");
-      $("role-badge").classList.remove("hide");
-      $("admin-card").classList.remove("hide");
-      $("login-card").classList.add("hide");
-      $("admin-toggle-btn").classList.add("hide");
-      render();
-    } else {
-      $("pin-msg").textContent = "PIN Admin salah!";
-    }
-  });
-
-  // Tombol Juri: Benar (+10)
-  $("admin-correct-btn").addEventListener("click", () => {
-    if (state.winner !== null) {
-      if (!state.scores) state.scores = Array.from({length: MAX_TEAMS}, () => 0);
-      state.scores[state.winner] = (state.scores[state.winner] || 0) + 10;
-      state.winner = null;
-      state.round++;
-      updateCloudState();
-    }
-  });
-
-  // Tombol Juri: Salah (-3)
-  $("admin-wrong-btn").addEventListener("click", () => {
-    if (state.winner !== null) {
-      if (!state.scores) state.scores = Array.from({length: MAX_TEAMS}, () => 0);
-      state.scores[state.winner] = (state.scores[state.winner] || 0) - 3;
-      state.winner = null;
-      state.round++;
-      updateCloudState();
-    }
-  });
-
-  $("reset-btn").addEventListener("click", () => {
-    state.winner = null;
-    state.round++;
-    updateCloudState();
-  });
-
-  $("team-count").addEventListener("change", (e) => {
-    state.count = parseInt(e.target.value, 10);
-    updateCloudState();
-  });
-
-  $("team-names-list").addEventListener("input", (e) => {
-    const teamIdx = e.target.getAttribute("data-team-input");
-    const codeIdx = e.target.getAttribute("data-code-input");
-    const pinIdx = e.target.getAttribute("data-pin-input");
-
-    if (teamIdx !== null) {
-      state.teams[parseInt(teamIdx, 10)] = e.target.value.trim() || `Tim ${parseInt(teamIdx, 10)+1}`;
-      updateCloudState();
-    } else if (codeIdx !== null) {
-      state.teamCodes[parseInt(codeIdx, 10)] = e.target.value.trim().toUpperCase() || `TIM${parseInt(codeIdx, 10)+1}`;
-      updateCloudState();
-    } else if (pinIdx !== null) {
-      state.teamPins[parseInt(pinIdx, 10)] = e.target.value.trim() || `10${parseInt(pinIdx, 10)+1}`;
-      updateCloudState();
-    }
-  });
-
-  render();
-</script>
+        // Muat status saat pertama kali halaman dibuka
+        fetchState();
+    </script>
 </body>
 </html>
