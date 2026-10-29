@@ -632,10 +632,11 @@
     }
     $("admin-leaderboard").innerHTML = lbHtml;
 
-    if (state.winner !== null) {
+    if (state.winner !== null && state.winner !== undefined && state.teams[state.winner]) {
       $("admin-winner-status").textContent = `Dimenangkan oleh: ${state.teams[state.winner]} (Kode: ${state.teamCodes[state.winner]})`;
       $("admin-judging-controls").classList.remove("hide");
     } else {
+      state.winner = null;
       $("admin-winner-status").textContent = "Menunggu tim memencet buzzer...";
       $("admin-judging-controls").classList.add("hide");
     }
@@ -668,7 +669,7 @@
 
     buzzBtn.className = "";
 
-    if (state.winner !== null) {
+    if (state.winner !== null && state.winner !== undefined && state.teams[state.winner]) {
       buzzBtn.disabled = true;
       buzzBtn.classList.add("won");
 
@@ -684,6 +685,7 @@
         if (bubble) bubble.textContent = "Yahh kamu keduluan! 🥺";
       }
     } else {
+      state.winner = null;
       buzzBtn.disabled = false;
       buzzBtn.innerHTML = `<span>BUZZ!</span><span style="font-size: 11px; font-weight: 500; opacity: 0.9;">CEPAT</span>`;
       statusText.textContent = "Siap! Tekan tombol buzzer secepat mungkin.";
@@ -694,13 +696,19 @@
     if (isAdmin) renderAdminPanel();
   }
 
-  // Sinkronisasi Realtime dengan Firebase Database
+  // Sinkronisasi Realtime dengan Firebase Database (Dengan Pengaman Kuat)
   const stateRef = ref(db, 'buzzer_state');
   onValue(stateRef, (snapshot) => {
     const data = snapshot.val();
-    if (data) {
+    if (data && data.teams) {
       const prevWinner = state.winner;
       state = data;
+      
+      // Pengaman agar winner tidak pernah undefined/string rusak
+      if (state.winner === undefined || state.winner === "null" || state.winner === null || !state.teams[state.winner]) {
+        state.winner = null;
+      }
+
       if (!state.teamCodes) {
         state.teamCodes = Array.from({length: MAX_TEAMS}, (_, i) => `TIM${i + 1}`);
       }
@@ -709,7 +717,16 @@
       }
       render();
     } else {
-      // Inisialisasi awal jika database kosong
+      // Inisialisasi otomatis jika database kosong / bernilai null
+      state = {
+        count: 4,
+        teams: Array.from({length: MAX_TEAMS}, (_, i) => `Tim ${i + 1}`),
+        teamCodes: Array.from({length: MAX_TEAMS}, (_, i) => `TIM${i + 1}`),
+        teamPins: Array.from({length: MAX_TEAMS}, (_, i) => `10${i + 1}`),
+        scores: Array.from({length: MAX_TEAMS}, () => 0),
+        winner: null,
+        round: 1
+      };
       set(stateRef, state);
     }
   });
@@ -719,7 +736,7 @@
   }
 
   function pressBuzzer() {
-    if (state.winner !== null) return;
+    if (state.winner !== null && state.winner !== undefined) return;
     if (myTeamIndex === null || myTeamIndex >= state.count) return;
 
     state.winner = myTeamIndex;
@@ -782,7 +799,7 @@
 
   // Tombol Juri: Benar (+10)
   $("admin-correct-btn").addEventListener("click", () => {
-    if (state.winner !== null) {
+    if (state.winner !== null && state.winner !== undefined) {
       if (!state.scores) state.scores = Array.from({length: MAX_TEAMS}, () => 0);
       state.scores[state.winner] = (state.scores[state.winner] || 0) + 10;
       state.winner = null;
@@ -793,7 +810,7 @@
 
   // Tombol Juri: Salah (-3)
   $("admin-wrong-btn").addEventListener("click", () => {
-    if (state.winner !== null) {
+    if (state.winner !== null && state.winner !== undefined) {
       if (!state.scores) state.scores = Array.from({length: MAX_TEAMS}, () => 0);
       state.scores[state.winner] = (state.scores[state.winner] || 0) - 3;
       state.winner = null;
